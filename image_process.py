@@ -236,7 +236,7 @@ def harvest_images_in_fragment(fragment, settings):
 def compute_paths(img, settings, derivative):
     process_dir = settings['IMAGE_PROCESS_DIR']
     img_src = urlparse(img['src'])
-    img_src_path = url2pathname(img_src.path[1:])
+    img_src_path = url2pathname(img_src.path.lstrip("/"))
     img_src_dirname, filename = os.path.split(img_src_path)
     derviate_path = os.path.join(process_dir, derivative)
     base_url = urljoin(img_src.geturl(), pathname2url(derviate_path))
@@ -250,8 +250,17 @@ def compute_paths(img, settings, derivative):
             break
     else:
         site_url = urlparse(settings["SITEURL"])
+        print(img_src_path)
+        if img_src_path.startswith("{filename}"):
+            raise Exception(("%s is unknown to pelican, most likely because"
+                             " the image does not exist.") %
+                            (url2pathname(img_src_path), ))
         site_url_path = url2pathname(site_url.path[1:])
-        src_path = img_src_path.partition(site_url_path)[2].lstrip("/")
+        if site_url_path:
+            src_path = img_src_path.partition(
+                site_url_path)[2].lstrip(os.path.sep)
+        else:
+            src_path = img_src_path.lstrip(os.path.sep)
         source = os.path.join(settings['PATH'], src_path)
         base_path = os.path.join(settings['OUTPUT_PATH'],
                                  os.path.dirname(src_path),
