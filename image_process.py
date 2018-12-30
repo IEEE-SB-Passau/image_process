@@ -241,7 +241,7 @@ def compute_paths(img, settings, derivative):
     derviate_path = os.path.join(process_dir, derivative)
     base_url = urljoin(img_src.geturl(), pathname2url(derviate_path))
 
-    for f, contobj in settings['filenames'].items():
+    for f, contobj in settings['static_content'].items():
         if img_src_path.endswith(contobj.save_as):
             source = contobj.source_path
             base_path = os.path.join(contobj.settings['OUTPUT_PATH'],
